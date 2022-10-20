@@ -1,3 +1,4 @@
+from sqlite3 import connect
 import webdev
 import os
 import json
@@ -10,6 +11,19 @@ def checkFileDir():
 allPages = []
 
 def get_text(content, websiteName):
+
+    linkStart = content.find('</p>')
+    linkEnd = content.find('</body>', linkStart)
+
+    outLinks = content[linkStart + 5: linkEnd-1]
+    outLinks = outLinks.strip(" ").split()
+    links = {}
+
+    for x in outLinks:
+        if x != '<a':
+            links[x[8:16]] = 0
+    
+    print(links)
 
     start = content.find("<p>")
     while start > 0:
@@ -25,8 +39,10 @@ def get_text(content, websiteName):
                 dict[i] = 0
             dict[i] += 1
 
+    
         with open(websiteName+".json", "w") as fp:
             json.dump(dict, fp)
+            json.dump(links, fp)
 
         start = content.find("<p>", end)
 
