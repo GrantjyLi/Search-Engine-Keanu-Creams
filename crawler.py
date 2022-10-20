@@ -2,11 +2,11 @@ import webdev
 import os
 import json
 
+allPages = []
 def checkFileDir():
     if not os.path.exists("pageFiles"):
         os.makedirs("pageFiles")
 
-allPages = []
 
 def get_text(content, websiteName):
 
@@ -23,6 +23,7 @@ def get_text(content, websiteName):
             if i not in dict.keys():
                 dict[i] = 0
             dict[i] += 1
+        dict["Total Words"] = len(words)
 
         with open(filePath, "w") as fp:
             json.dump(dict, fp)
@@ -60,12 +61,12 @@ def crawl(seed):
 def time():
     import time
     start = time.time()
-
+    global allPages
     checkFileDir()
     files = os.listdir("pageFiles")
     for i in files:
         os.remove(os.path.join("pageFiles", i))
-
+    allPages = []
     crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
     end = time.time()
 
