@@ -40,7 +40,7 @@ def get_text(content, websiteName):
         
         dict['incominglinks'] = links
 
-        with open(websiteName+".json", "w") as fp:
+        with open(filePath, "w") as fp:
             json.dump(dict, fp)
 
         start = content.find("<p>", end)
