@@ -6,18 +6,17 @@ def checkFileDir():
     if not os.path.exists("pageFiles"):
         os.makedirs("pageFiles")
 
-
 allPages = []
 
 def get_text(content, websiteName):
 
     start = content.find("<p>")
+    filePath = os.path.join("pageFiles", websiteName+".json")
     while start > 0:
         end = content.find("</p>", start)
         words = content[start + 3: end]
 
         dict = {}
-        pageNam = websiteName
 
         words = words.strip("\n").split()
         for i in words:
@@ -25,11 +24,10 @@ def get_text(content, websiteName):
                 dict[i] = 0
             dict[i] += 1
 
-        with open(websiteName+".json", "w") as fp:
+        with open(filePath, "w") as fp:
             json.dump(dict, fp)
 
         start = content.find("<p>", end)
-
 
 def crawl(seed):
     global allPages
@@ -40,7 +38,6 @@ def crawl(seed):
     get_text(webdev.read_url(seed), webpageName)
 
     length = 0
-
 
     while len(allPages) > length:
 
@@ -56,18 +53,22 @@ def crawl(seed):
                 print("crawling " + link)
 
                 crawl(link)
-
             start = page.find("href=\"", end)
+
+
 
 def time():
     import time
     start = time.time()
 
     checkFileDir()
-    
+    files = os.listdir("pageFiles")
+    for i in files:
+        os.remove(os.path.join("pageFiles", i))
 
     crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
     end = time.time()
+
     print(end - start)
 
 
