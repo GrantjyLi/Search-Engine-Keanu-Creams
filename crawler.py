@@ -1,30 +1,46 @@
 import webdev
+import os
+import json
+
+def checkFileDir():
+    if not os.path.exists("pageFiles"):
+        os.makedirs("pageFiles")
+
 
 allPages = []
 
+def get_text(content, websiteName):
 
-def get_text(content, URL):
-    fName = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/") + ".txt"
-    fileHand = open(fName, "w")
-    print("writing " + fName)
     start = content.find("<p>")
     while start > 0:
         end = content.find("</p>", start)
-        fileHand.write(content[start + 3: end])
+        words = content[start + 3: end]
+
+        dict = {}
+        pageNam = websiteName
+
+        words = words.strip("\n").split()
+        for i in words:
+            if i not in dict.keys():
+                dict[i] = 0
+            dict[i] += 1
+
+        with open(websiteName+".json", "w") as fp:
+            json.dump(dict, fp)
 
         start = content.find("<p>", end)
-
-    fileHand.close()
 
 
 def crawl(seed):
     global allPages
     allPages.append(seed)
     page = webdev.read_url(allPages[-1])
-    get_text(webdev.read_url(seed), seed)
+    websiteName = seed[0:len(seed) - len("N-X.html")]
+    webpageName = seed.strip(websiteName)
+    get_text(webdev.read_url(seed), webpageName)
 
     length = 0
-    websiteName = seed[0:len(seed) - len("N-X.html")]
+
 
     while len(allPages) > length:
 
@@ -46,6 +62,10 @@ def crawl(seed):
 def time():
     import time
     start = time.time()
+
+    checkFileDir()
+    
+
     crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
     end = time.time()
     print(end - start)
