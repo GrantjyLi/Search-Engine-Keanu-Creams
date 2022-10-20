@@ -37,6 +37,8 @@ def get_text(content, websiteName):
             if i not in dict.keys():
                 dict[i] = 0
             dict[i] += 1
+        
+        dict['incominglinks'] = links
 
         with open(websiteName+".json", "w") as fp:
             json.dump(dict, fp)
