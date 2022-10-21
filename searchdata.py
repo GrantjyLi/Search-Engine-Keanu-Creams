@@ -2,9 +2,9 @@ import json
 import math
 import os
 
-
 def checkURL(pageName):
-    if os.path.join("pageFiles", pageName + ".json"):
+    filePath = os.path.join("pageFiles", pageName)
+    if os.path.isfile(filePath):
         return True
     return False
 
@@ -21,16 +21,20 @@ def get_Links(URL, inout):
     return None
 
 def get_outgoing_links(URL):
+    URL = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
     return get_Links(URL, "outgoinglinks")
 
 def get_incoming_links(URL):
+    URL = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
     return get_Links(URL, "incominglinks")
 
 def get_page_rank(URL):
-#returns pageRank value of the URL page
-    #if the url was not found during crawl, return -1
-    #BRUHHHHHH< read about this more before starting
-    return 0
+    URL = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
+    if checkURL(URL):
+        #code goes here
+
+    return None
+
 def get_idf(word):
     numWordPages =0
     numPages =0
@@ -49,11 +53,11 @@ def get_idf(word):
     return math.log((numPages/(1+numWordPages)), 2)
 
 def get_tf(URL, word):
-    page = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
+    URL = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
 
-    if checkURL(page):
+    if checkURL(URL):
 
-        fHand = open(os.path.join("pageFiles", page))
+        fHand = open(os.path.join("pageFiles", URL))
         data = json.load(fHand)
         fHand.close()
         if word in data:
@@ -65,4 +69,4 @@ def get_tf(URL, word):
 def get_if_idf(URL, word):
     return get_idf(word)*math.log(1+get_tf(URL, word))
 
-print(get_if_idf("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-7.html", "blueberry"))
+print(get_page_rank("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-011.html"))
