@@ -3,8 +3,6 @@ import math
 import os
 
 
-def get_page():
-    return
 def checkURL(pageName):
     if os.path.join("pageFiles", pageName + ".json"):
         return True
@@ -65,8 +63,6 @@ def get_tf(URL, word):
 
 
 def get_if_idf(URL, word):
-#return the tf-idf weight of the word within URL
-    # see formula on instructions page
-    return 0
+    return get_idf(word)*math.log(1+get_tf(URL, word))
 
-print(get_idf("blueberry"))
+print(get_if_idf("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-7.html", "blueberry"))
