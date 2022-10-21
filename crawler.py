@@ -55,8 +55,6 @@ def crawl(seed):
                 crawl(link)
             start = page.find("href=\"", end)
 
-
-
 def time():
     import time
     start = time.time()
