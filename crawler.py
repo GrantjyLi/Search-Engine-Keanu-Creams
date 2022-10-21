@@ -10,6 +10,17 @@ def checkFileDir():
 
 
 def get_text(content, websiteName):
+    linkStart = content.find('</p>')
+    linkEnd = content.find('</body>', linkStart)
+
+    outLinks = content[linkStart + 5: linkEnd-1]
+    outLinks = outLinks.strip(" ").split()
+    links = {}
+
+    for x in outLinks:
+        if x != '<a':
+            links[x[8:16]] = 0
+
     start = content.find("<p>")
     filePath = os.path.join("pageFiles", websiteName+".json")
 
@@ -24,6 +35,7 @@ def get_text(content, websiteName):
             dict[i] += 1
 
         dict["Total Words"] = len(words)
+        dict['incominglinks'] = links
         with open(filePath, "w") as fp:
             json.dump(dict, fp)
         start = content.find("<p>", end)
