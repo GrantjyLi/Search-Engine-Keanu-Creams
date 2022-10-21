@@ -1,4 +1,3 @@
-from sqlite3 import connect
 import webdev
 import os
 import json
@@ -20,7 +19,6 @@ def get_text(content, websiteName):
         if x != '<a':
             links.append("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16])
 
-
     start = content.find("<p>")
     filePath = os.path.join("pageFiles", websiteName+".json")
 
@@ -41,7 +39,7 @@ def get_text(content, websiteName):
         start = content.find("<p>", end)
 
 
-def crawl(seed):
+def crawler(seed):
     global allPages
     allPages.append(seed)
     page = webdev.read_url(allPages[-1])
@@ -64,25 +62,30 @@ def crawl(seed):
             if not link in allPages:
                 print("crawling " + link)
 
-                crawl(link)
+                crawler(link)
             start = page.find("href=\"", end)
 
-def time():
+def crawl(seed):
     import time
     start = time.time()
     global allPages
+
     checkFileDir()
     files = os.listdir("pageFiles")
     for i in files:
         os.remove(os.path.join("pageFiles", i))
     allPages = []
-    crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
+
+    crawler(seed)
+
+    files = os.listdir("pageFiles")
+    numPages =0
+    for i in files:
+        numPages += 1
+
     end = time.time()
-
     print(end - start)
+    return numPages
 
 
-time()
-
-# returns the number of total pages found in crawl
-
+print(crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html"))
