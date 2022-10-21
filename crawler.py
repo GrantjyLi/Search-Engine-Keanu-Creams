@@ -1,3 +1,4 @@
+from sqlite3 import connect
 import webdev
 import os
 import json
@@ -9,26 +10,24 @@ def checkFileDir():
 
 
 def get_text(content, websiteName):
-
     start = content.find("<p>")
     filePath = os.path.join("pageFiles", websiteName+".json")
+
     while start > 0:
         end = content.find("</p>", start)
         words = content[start + 3: end]
-
         dict = {}
-
         words = words.strip("\n").split()
         for i in words:
-            if i not in dict.keys():
+            if i not in dict:
                 dict[i] = 0
             dict[i] += 1
-        dict["Total Words"] = len(words)
 
+        dict["Total Words"] = len(words)
         with open(filePath, "w") as fp:
             json.dump(dict, fp)
-
         start = content.find("<p>", end)
+
 
 def crawl(seed):
     global allPages
