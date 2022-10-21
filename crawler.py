@@ -8,18 +8,18 @@ def checkFileDir():
     if not os.path.exists("pageFiles"):
         os.makedirs("pageFiles")
 
-
 def get_text(content, websiteName):
     linkStart = content.find('</p>')
     linkEnd = content.find('</body>', linkStart)
 
     outLinks = content[linkStart + 5: linkEnd-1]
     outLinks = outLinks.strip(" ").split()
-    links = {}
+    links = []
 
     for x in outLinks:
         if x != '<a':
-            links[x[8:16]] = 0
+            links.append("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16])
+
 
     start = content.find("<p>")
     filePath = os.path.join("pageFiles", websiteName+".json")
