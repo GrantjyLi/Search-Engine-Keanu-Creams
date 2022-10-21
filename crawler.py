@@ -1,3 +1,4 @@
+from fileinput import filename
 import webdev
 import os
 import json
@@ -17,7 +18,7 @@ def get_text(content, websiteName):
 
     for x in outLinks:
         if x != '<a':
-            links.append("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16])
+            links.append("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16])#This will not work for other urls
 
     start = content.find("<p>")
     filePath = os.path.join("pageFiles", websiteName+".json")
@@ -33,10 +34,17 @@ def get_text(content, websiteName):
             dict[i] += 1
 
         dict["Total Words"] = len(words)
-        dict['incominglinks'] = links
+        dict['outgoinglinks'] = links
         with open(filePath, "w") as fp:
             json.dump(dict, fp)
         start = content.find("<p>", end)
+
+def addIncoming(addLink,link ):
+    websiteName = addLink[0:len(link) - len("N-X.html")]
+    webpageName = addLink.strip(websiteName)
+    fileName = open('pageFiles/'+ webpageName +'.json')
+    dict = json.load(fileName)
+    print(dict)
 
 
 def crawler(seed):
@@ -45,6 +53,8 @@ def crawler(seed):
     page = webdev.read_url(allPages[-1])
     websiteName = seed[0:len(seed) - len("N-X.html")]
     webpageName = seed.strip(websiteName)
+    print(webpageName)
+    #print(websiteName)
     get_text(webdev.read_url(seed), webpageName)
 
     length = 0
@@ -89,3 +99,5 @@ def crawl(seed):
 
 
 print(crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html"))
+
+addIncoming("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-3.html", 'o')
