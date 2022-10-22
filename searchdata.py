@@ -1,72 +1,59 @@
 import json
-import math
 import os
 
-def checkURL(pageName):
-    filePath = os.path.join("pageFiles", pageName)
+def get_page(URL):
+    return URL[URL.rfind("/")+1:len(URL)-len(".html")] + ".json"
+
+def checkURL(URL):
+    filePath = os.path.join("pageFiles", get_page(URL))
     if os.path.isfile(filePath):
         return True
     return False
 
-def get_Links(URL, inout):
-    page = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
-    if checkURL(page):
+def get_Links(URL, suffix):
+    if checkURL(URL):
+        page = get_page(URL)
         fHand = open(os.path.join("pageFiles", page))
         data = json.load(fHand)
         fHand.close()
 
         if len(data) == 0:
             return None
-        return data[inout]
+        return data[suffix]
     return None
 
 def get_outgoing_links(URL):
-    URL = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
     return get_Links(URL, "outgoinglinks")
 
 def get_incoming_links(URL):
-    URL = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
     return get_Links(URL, "incominglinks")
 
 def get_page_rank(URL):
-    URL = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
     if checkURL(URL):
-        #code goes here
-
+        return None
     return None
 
 def get_idf(word):
-    numWordPages =0
-    numPages =0
-    files = os.listdir("pageFiles")
+    fHand = open(os.path.join("pageFreqFiles", "IDFData.json"))
+    data = json.load(fHand)
+    fHand.close()
 
-    for i in files:
-        fHand = open(os.path.join("pageFiles", i))
-        data = json.load(fHand)
-        fHand.close()
-        if word in data:
-            numWordPages +=1
-        numPages +=1
-
-    if numWordPages == 0:
+    if word not in data:
         return 0
-    return math.log((numPages/(1+numWordPages)), 2)
+    return data[word + "IDF"]
 
-def get_tf(URL, word):
-    URL = URL.strip("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/").strip(".html") + ".json"
+def get_tf_data(URL, word, suffix):
 
     if checkURL(URL):
+        fhand = open(os.path.join("pageFreqFiles", get_page(URL) + "TF"))
+        data = json.load(fhand)
+        fhand.close()
+        return data[word + suffix]
+    return 0
 
-        fHand = open(os.path.join("pageFiles", URL))
-        data = json.load(fHand)
-        fHand.close()
-        if word in data:
-            return data[word] / data["Total Words"]
-        return -1
-    return -1
+def get_tf(URL, word):
+    return get_tf_data(URL, word, "TF")
+def get_tf_idf(URL, word):
+    return get_tf_data(URL, word, "TFIDF")
 
-
-def get_if_idf(URL, word):
-    return get_idf(word)*math.log(1+get_tf(URL, word))
-
-print(get_page_rank("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-011.html"))
+print(get_outgoing_links("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-9.html"))
