@@ -25,6 +25,7 @@ def get_text(content, websiteName):
     for x in outLinks:
         if x != '<a':
             links.append("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16])#This will not work for other urls
+            addIncoming("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16],"http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + websiteName)
 
 
     start = content.find("<p>")
@@ -50,7 +51,8 @@ def get_text(content, websiteName):
     TFDict ={}
 
     for i in dict:
-        TFDict[i + "TF"] = dict[i]/totalWords
+        if type(dict[i]) is int: 
+            TFDict[i + "TF"] = dict[i]/totalWords
 
     dict["Total Words"] = totalWords
     dict['outgoingLinks'] = links
@@ -65,11 +67,14 @@ def get_text(content, websiteName):
 
 
 def addIncoming(addLink,link):
+    
     websiteName = addLink[0:len(link) - len("N-X.html")-1]
     webpageName = addLink.strip(websiteName)
-    fileName = open(os.path.join("pageFiles", webpageName +'.json'))
-    if os.path.exists("pageFiles/"+webpageName+'.json'):
-        dict = json.load(fileName)
+    print(webpageName)
+    fileName = os.path.join("pageFiles", webpageName[5:8] +'.json')
+
+    if os.path.exists("pageFiles/"+webpageName[5:8]+'.json'):
+        dict = json.load(open("pageFiles/"+webpageName[5:8]+'.json'))
     else:
         dict={}
 
@@ -78,7 +83,7 @@ def addIncoming(addLink,link):
     else:
         dict['incomingLinks'] = [link]
 
-    with open(os.path.join("pageFiles", webpageName +'.json'), "w") as fp:
+    with open(fileName, "w") as fp:
         json.dump(dict, fp)
     fp.close()
 
@@ -164,3 +169,5 @@ def crawl(seed):
     end = time.time()
     print(end - start)
     return totalPages
+
+crawler("https://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
