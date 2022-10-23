@@ -26,10 +26,14 @@ def get_text(content, websiteName):
         if x != '<a':
             links.append("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16])#This will not work for other urls
 
+
     start = content.find("<p>")
     filePath = os.path.join("pageFiles", websiteName+".json")
     freqFilePath = os.path.join("pageFreqFiles", websiteName + "TF.json")
-    dict = {}
+    if os.path.exists("pageFiles/"+websiteName+'.json'):
+        dict = json.load(open(filePath))
+    else:
+        dict={}
     totalWords =0
 
     while start > 0:
