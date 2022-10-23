@@ -150,8 +150,3 @@ def crawl(seed):
     end = time.time()
     print(end - start)
     return totalPages
-
-
-print(crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html"))
-
-addIncoming("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-3.html", 'o')

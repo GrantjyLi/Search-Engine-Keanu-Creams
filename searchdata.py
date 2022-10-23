@@ -56,4 +56,3 @@ def get_tf(URL, word):
 def get_tf_idf(URL, word):
     return get_tf_data(URL, word, "TFIDF")
 
-print(get_outgoing_links("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-9.html"))
