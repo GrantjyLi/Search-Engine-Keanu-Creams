@@ -49,7 +49,7 @@ def get_text(content, websiteName):
         TFDict[i + "TF"] = dict[i]/totalWords
 
     dict["Total Words"] = totalWords
-    dict['outgoinglinks'] = links
+    dict['outgoingLinks'] = links
 
     with open(filePath, "w") as fp:
         json.dump(dict, fp)
@@ -60,13 +60,23 @@ def get_text(content, websiteName):
     fp.close()
 
 
-def addIncoming(addLink,link ):
+def addIncoming(addLink,link):
     websiteName = addLink[0:len(link) - len("N-X.html")-1]
     webpageName = addLink.strip(websiteName)
     fileName = open(os.path.join("pageFiles", webpageName +'.json'))
-    dict = json.load(fileName)
-    print(dict)
+    if os.path.exists("pageFiles/"+webpageName+'.json'):
+        dict = json.load(fileName)
+    else:
+        dict={}
 
+    if 'incomingLinks' in dict:
+        dict['incomingLinks'].append(link)
+    else:
+        dict['incomingLinks'] = [link]
+
+    with open(os.path.join("pageFiles", webpageName +'.json'), "w") as fp:
+        json.dump(dict, fp)
+    fp.close()
 
 def crawler(seed):
     global allPages
