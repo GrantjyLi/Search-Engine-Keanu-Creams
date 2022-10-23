@@ -68,6 +68,7 @@ def get_text(content, websiteName):
 
 def addIncoming(addLink,link):
     
+    
     websiteName = addLink[0:len(link) - len("N-X.html")-1]
     webpageName = addLink.strip(websiteName)
     print(webpageName)
@@ -88,6 +89,7 @@ def addIncoming(addLink,link):
     fp.close()
 
 def crawler(seed):
+    checkFileDir()
     global allPages
     allPages.append(seed)
     page = webdev.read_url(allPages[-1])
