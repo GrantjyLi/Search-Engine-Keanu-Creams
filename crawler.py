@@ -3,16 +3,21 @@ import os
 import json
 import math
 
-allPages = []
+allPages = {}
 totalPages =0
+websiteName =""
 def checkFileDir():
     if not os.path.exists("pageFiles"):
         os.makedirs("pageFiles")
     if not os.path.exists("pageFreqFiles"):
         os.makedirs("pageFreqFiles")
 
-def get_text(content, websiteName):
+def get_text(content, link):
+
+    webpageName = content[content.index("itle>") + 5: content.index("</tit")]
+
     global totalPages
+    global websiteName
     totalPages += 1
 
     linkStart = content.find('</p>')
@@ -22,19 +27,10 @@ def get_text(content, websiteName):
     outLinks = outLinks.strip(" ").split()
     links = []
 
-    for x in outLinks:
-        if x != '<a':
-            links.append("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16])#This will not work for other urls
-            addIncoming("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + x[8:16],"http://people.scs.carleton.ca/~davidmckenney/tinyfruits/" + websiteName)
-
-
     start = content.find("<p>")
-    filePath = os.path.join("pageFiles", websiteName+".json")
-    freqFilePath = os.path.join("pageFreqFiles", websiteName + "TF.json")
-    if os.path.exists("pageFiles/"+websiteName+'.json'):
-        dict = json.load(open(filePath))
-    else:
-        dict={}
+    filePath = os.path.join("pageFiles", webpageName + ".json")
+    freqFilePath = os.path.join("pageFreqFiles", webpageName + "TF.json")
+    dict = {}
     totalWords =0
 
     while start > 0:
@@ -54,6 +50,24 @@ def get_text(content, websiteName):
         if type(dict[i]) is int: 
             TFDict[i + "TF"] = dict[i]/totalWords
 
+    with open(freqFilePath, "w") as fp:
+        json.dump(TFDict, fp)
+    fp.close()
+
+    dict["Title"] = webpageName
+    for x in outLinks:
+        if x != '<a':
+            link = x[x.index("ref=\".") + 7: x.index("\">")]
+            links.append(websiteName + link)
+            addIncoming(websiteName + link,webpageName)
+
+    fhand = open(os.path.join("pageFiles", webpageName + ".json"))
+    thisdict = json.load(fhand)
+    fhand.close()
+
+    dict.update(thisdict)
+
+    dict["URL"] = websiteName + link
     dict["Total Words"] = totalWords
     dict['outgoingLinks'] = links
 
@@ -61,39 +75,31 @@ def get_text(content, websiteName):
         json.dump(dict, fp)
     fp.close()
 
-    with open(freqFilePath, "w") as fp:
-        json.dump(TFDict, fp)
-    fp.close()
-
 
 def addIncoming(addLink,link):
-
-    websiteName = addLink[0:len(link) - len("N-X.html")-1]
-    webpageName = addLink.strip(websiteName)
-    fileName = os.path.join("pageFiles", webpageName[5:8] +'.json')
-
-    if os.path.exists("pageFiles/"+webpageName[5:8]+'.json'):
-        dict = json.load(open("pageFiles/"+webpageName[5:8]+'.json'))
+    global websiteName
+    fileName = os.path.join("pageFiles", link +'.json')
+    if os.path.exists(fileName):
+        dict = json.load(open(fileName))
     else:
         dict={}
 
     if 'incomingLinks' in dict:
-        dict['incomingLinks'].append(link)
+        dict['incomingLinks'].append(addLink)
     else:
-        dict['incomingLinks'] = [link]
+        dict['incomingLinks'] = [addLink]
 
     with open(fileName, "w") as fp:
         json.dump(dict, fp)
     fp.close()
 
 def crawler(seed):
-    checkFileDir()
+
     global allPages
-    allPages.append(seed)
-    page = webdev.read_url(allPages[-1])
-    websiteName = seed[0:len(seed) - len("N-X.html")]
-    webpageName = seed.strip(websiteName)
-    get_text(webdev.read_url(seed), webpageName)
+    global websiteName
+    allPages[seed] = ""
+    page = webdev.read_url(seed)
+    get_text(webdev.read_url(seed), seed)
 
     length = 0
 
@@ -107,9 +113,8 @@ def crawler(seed):
             end = page.find(".html", start)
             link = websiteName + page[start + 8:end + 5]
 
-            if not link in allPages:
+            if link not in allPages:
                 print("crawling " + link)
-
                 crawler(link)
             start = page.find("href=\"", end)
 
@@ -117,8 +122,11 @@ def crawl(seed):
     import time
     global allPages
     global totalPages
-    allPages = []
+    global websiteName
+    allPages = {}
     totalPages = 0
+    checkFileDir()
+    websiteName = seed[0:seed.rfind("/") +1]
 
     start = time.time()
     checkFileDir()
@@ -135,7 +143,7 @@ def crawl(seed):
         data = json.load(fHand)
         fHand.close()
         for i in data:
-            if i == "Total Words":
+            if i == "Title":
                 break
             if i not in itemPages:
                 itemPages[i] =0
@@ -145,14 +153,13 @@ def crawl(seed):
     for i in itemPages:
         idfData[i + "IDF"] = math.log(totalPages/(1+itemPages[i]), 2)
 
-
     for i in os.listdir("pageFreqFiles"):
         fHand = open(os.path.join("pageFreqFiles", i))
         tfData = json.load(fHand)
         fHand.close()
         moretfData ={}
         for k in tfData:
-            moretfData[k + "IDF"] = math.log(1 + tfData[k]) * idfData[k.strip("TF") + "IDF"]
+            moretfData[k + "IDF"] = math.log(1 + tfData[k], 2) * idfData[k.strip("TF") + "IDF"]
         tfData.update(moretfData)
         with open(os.path.join("pageFreqFiles", i), "w") as fp:
             json.dump(tfData, fp)
@@ -170,4 +177,5 @@ def crawl(seed):
     print(end - start)
     return totalPages
 
-crawler("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
+#crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-9.html")
+
