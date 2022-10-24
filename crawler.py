@@ -177,5 +177,5 @@ def crawl(seed):
     print(end - start)
     return totalPages
 
-#crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-9.html")
-
+#crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
+#base url should be the same as page rank - page rank will not work unless urls are exactly the same i.e http vs https

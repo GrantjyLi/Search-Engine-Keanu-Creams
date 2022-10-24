@@ -65,6 +65,7 @@ def createMatrix():
 
 def populateMatrix(url):
     global matrix
+    global urlToIndex
     files = os.listdir('pageFiles')
     
     for x in files:
@@ -106,7 +107,7 @@ def piMultiplication():
     global matrix
     global length
 
-    prevVector = [[100,100,100,100,100,100,100,100,100,100]]
+    prevVector = [[100]*length]
     currVector = [1]
     currVector = addCurrVector(currVector)
     distance = (euclidean_dist(prevVector,currVector))
@@ -138,7 +139,11 @@ def saveData(values):
 def pageRank(URL):
     createMap(URL)
     createMatrix()
+    print(urlToIndex)
     populateMatrix(URL)
     randomProbability()
     modAlpha()
     saveData(piMultiplication())
+
+
+#pageRank('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
