@@ -2,6 +2,7 @@ import os
 
 urlToIndex={}
 indexToURL={}
+matrix=[]
 
 def createMap(url):
     global urlToIndex
@@ -17,3 +18,12 @@ def createMap(url):
 
 
 
+def createMatrix():
+    global urlToIndex
+    global indexToURL
+    for x in range (len(urlToIndex)):
+        matrix.append([0]*len(urlToIndex))
+
+
+createMap('chicken/')
+print(createMatrix())
