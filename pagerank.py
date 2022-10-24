@@ -1,5 +1,7 @@
+from operator import index
 import os
 import json
+import math
 
 urlToIndex={}
 indexToURL={}
@@ -30,14 +32,15 @@ def mult_matrix(a, b):
 			resMatrix[j].append(currSum)#add currSum to the result Matrix
 	return resMatrix
 
-def euclidean_dist(a,b):
-	if len(a[0]) != len(b[0]):
-		return None
+def euclidean_dist(a, b):
+    if len(a[0]) != len(b[0]):
+        return None
 	
-	sum=0
-	for i in range (len(a[0])):
-		sum+=(a[0][i]-b[0][i])**2
-	return (sum)**(1/2)
+    sum=0
+    for i in range (len(a[0])):
+        sum+=(a[0][i]-b[0][i])**2
+        return (sum)**(1/2)
+    
 
 def createMap(url):
     global urlToIndex
@@ -94,16 +97,52 @@ def modAlpha():
         for y in range(len(x)):
             x[y] += alpha/length
 
+def addCurrVector(currVector):
+    for x in range(length-1):
+        currVector.append(0)
+    return [currVector]
 
+def piMultiplication():
+    global matrix
+    global length
 
+    prevVector = [[100,100,100,100,100,100,100,100,100,100]]
+    currVector = [1]
+    currVector = addCurrVector(currVector)
+    distance = (euclidean_dist(prevVector,currVector))
+    count=0
 
+    while distance > .001:
+        prevVector = currVector
+        currVector = mult_matrix(currVector, matrix)
+        count+=1
+        distance = (euclidean_dist(prevVector,currVector))
+    
+    return currVector
+
+def saveData(values):
+    if not os.path.exists("pageRank"):
+        os.makedirs("pageRank")
+    filePath = os.path.join("pageRank","data.json")
+    dict={}
+    print(len(values[0]))
+    for x in range (len(values[0])):
+        print (indexToURL[x])
+        dict[indexToURL[x]] = values[0][x]
+
+    with open((filePath), "w") as fp:
+        json.dump(dict, fp)
+    fp.close()
+
+        
 
 createMap('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
-print(createMatrix())
+createMatrix()
 
 populateMatrix('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
 
 randomProbability()
 modAlpha()
+saveData(piMultiplication())
 
-print(matrix)
+#print(matrix)
