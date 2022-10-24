@@ -41,8 +41,14 @@ def euclidean_dist(a, b):
         sum+=(a[0][i]-b[0][i])**2
         return (sum)**(1/2)
     
+def fetchURL(file):
+    dict = json.load(open(os.path.join("pageFiles", file)))
+    print(dict)
+    return dict['URL']
 
-def createMap(url):
+
+
+def createMap():
     global urlToIndex
     global indexToURL
     global length
@@ -51,8 +57,9 @@ def createMap(url):
 
     count = 0
     for x in files:
-        urlToIndex[url+x[0:3]+'.html'] = count
-        indexToURL[count] = url+x[0:3]+'.html'
+        print(fetchURL(x))
+        urlToIndex[fetchURL(x)] = count
+        indexToURL[count] = fetchURL(x)
         count+=1
     length = len(indexToURL)
     
@@ -63,7 +70,7 @@ def createMatrix():
     for x in range (len(urlToIndex)):
         matrix.append([0]*len(urlToIndex))
 
-def populateMatrix(url):
+def populateMatrix():
     global matrix
     global urlToIndex
     files = os.listdir('pageFiles')
@@ -71,8 +78,8 @@ def populateMatrix(url):
     for x in files:
         dict = json.load(open(os.path.join("pageFiles", x)))
         for y in dict['outgoingLinks']:
-            matrix[urlToIndex[url+x[0:3]+'.html']][urlToIndex[y]] = 1
-            matrix[urlToIndex[y]][urlToIndex[url+x[0:3]+'.html']] = 1
+            matrix[urlToIndex[fetchURL(x)]][urlToIndex[y]] = 1
+            matrix[urlToIndex[y]][urlToIndex[fetchURL(x)]] = 1
 
 def randomProbability():
     for x in matrix:
@@ -136,14 +143,13 @@ def saveData(values):
     fp.close()
 
         
-def pageRank(URL):
-    createMap(URL)
+def pageRank():
+    createMap()
     createMatrix()
     print(urlToIndex)
-    populateMatrix(URL)
+    populateMatrix()
     randomProbability()
     modAlpha()
     saveData(piMultiplication())
 
-
-#pageRank('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
+pageRank()

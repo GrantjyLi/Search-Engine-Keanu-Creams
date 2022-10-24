@@ -66,8 +66,8 @@ def get_text(content, link):
     fhand.close()
 
     dict.update(thisdict)
-
-    dict["URL"] = websiteName + link
+    print(websiteName)
+    dict["URL"] = websiteName+webpageName + '.html'
     dict["Total Words"] = totalWords
     dict['outgoingLinks'] = links
 
@@ -177,5 +177,4 @@ def crawl(seed):
     print(end - start)
     return totalPages
 
-#crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
-#base url should be the same as page rank - page rank will not work unless urls are exactly the same i.e http vs https
+crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
