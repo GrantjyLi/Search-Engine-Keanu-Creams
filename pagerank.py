@@ -1,4 +1,5 @@
 import os
+import json
 
 urlToIndex={}
 indexToURL={}
@@ -6,7 +7,12 @@ matrix=[]
 alpha = .1
 length = 0
 
-
+def mult_scalar(matrix, scale):
+	resMatrix = matrix
+	for i in range (len(matrix)):
+		for j in range (len(matrix[i])):
+			resMatrix[i][j] *= scale
+	return resMatrix
 
 def mult_matrix(a, b):
 	if ((len(b) != len(a[0])) or (len(a) == 0) or (len(b) ==0) or (len(a[0])==0) or (len(b[0]) ==0)):
@@ -48,15 +54,56 @@ def createMap(url):
     length = len(indexToURL)
     
     
-
-
-
 def createMatrix():
     global urlToIndex
     global indexToURL
     for x in range (len(urlToIndex)):
         matrix.append([0]*len(urlToIndex))
 
+def populateMatrix(url):
+    global matrix
+    files = os.listdir('pageFiles')
+    
+    for x in files:
+        dict = json.load(open(os.path.join("pageFiles", x)))
+        for y in dict['outgoingLinks']:
+            matrix[urlToIndex[url+x[0:3]+'.html']][urlToIndex[y]] = 1
+            matrix[urlToIndex[y]][urlToIndex[url+x[0:3]+'.html']] = 1
 
-createMap('chicken/')
+def randomProbability():
+    for x in matrix:
+        numX = 0
+        numIndex = []
+        for y in range (len(x)):
+            if x[y] == 1:
+                numX+=1
+                numIndex.append(y)
+        if numX == 0:
+            for y in range (len(x)):
+                x[y] = 1/length
+        else:
+            for z in numIndex:
+                x[z] = 1/numX
+
+def modAlpha():
+    global matrix
+    global length
+    matrix = mult_scalar(matrix, 1 - alpha)
+
+    for x in matrix:
+        for y in range(len(x)):
+            x[y] += alpha/length
+
+
+
+
+
+createMap('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
 print(createMatrix())
+
+populateMatrix('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
+
+randomProbability()
+modAlpha()
+
+print(matrix)
