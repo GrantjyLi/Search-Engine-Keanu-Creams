@@ -43,7 +43,6 @@ def euclidean_dist(a, b):
     
 def fetchURL(file):
     dict = json.load(open(os.path.join("pageFiles", file)))
-    print(dict)
     return dict['URL']
 
 
@@ -57,7 +56,6 @@ def createMap():
 
     count = 0
     for x in files:
-        print(fetchURL(x))
         urlToIndex[fetchURL(x)] = count
         indexToURL[count] = fetchURL(x)
         count+=1
@@ -133,9 +131,7 @@ def saveData(values):
         os.makedirs("pageRank")
     filePath = os.path.join("pageRank","data.json")
     dict={}
-    print(len(values[0]))
     for x in range (len(values[0])):
-        print (indexToURL[x])
         dict[indexToURL[x]] = values[0][x]
 
     with open((filePath), "w") as fp:
@@ -146,7 +142,6 @@ def saveData(values):
 def pageRank():
     createMap()
     createMatrix()
-    print(urlToIndex)
     populateMatrix()
     randomProbability()
     modAlpha()
