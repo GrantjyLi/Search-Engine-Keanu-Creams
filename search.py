@@ -27,13 +27,20 @@ def search(phrase, boost):
     for i in range(len(basisVector)): # making the term-frequency values of each word into TFIDF values
         queryVector[i] = math.log(1 + queryVector[i], 2) * idfData[basisVector[i] + "IDF"]
 
-    print(basisVector)
-    print(queryVector)
+    filepath = os.listdir("pageFreqFiles")
+    for file in filepath:
+        fHand = open(os.path.join(filepath, file))
+        freqData = json.load(fHand)
+        fHand.close()
+        pageFreqData = [[], freqData[]]
+
+
+
 
 
 search("kiwi kiwi lime banana banana apple apple apple", True)
 
 
 
-#phase - represents a phrase searched by user, may contain spaces and multiple words
-#boost - boolean representing whether the content score for each page should be boosted by that page's PageRank value, true or false
+
+

@@ -70,7 +70,6 @@ def addIncoming(addLink,link):
 
     websiteName = addLink[0:len(link) - len("N-X.html")-1]
     webpageName = addLink.strip(websiteName)
-    print(webpageName)
     fileName = os.path.join("pageFiles", webpageName[5:8] +'.json')
 
     if os.path.exists("pageFiles/"+webpageName[5:8]+'.json'):
@@ -171,4 +170,4 @@ def crawl(seed):
     print(end - start)
     return totalPages
 
-crawler("https://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
+crawler("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
