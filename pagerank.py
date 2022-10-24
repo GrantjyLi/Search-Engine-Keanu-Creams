@@ -135,14 +135,13 @@ def saveData(values):
     fp.close()
 
         
+def pageRank(URL):
+    createMap(URL)
+    createMatrix()
+    populateMatrix(URL)
+    randomProbability()
+    modAlpha()
+    saveData(piMultiplication())
 
-createMap('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
-createMatrix()
 
-populateMatrix('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
-
-randomProbability()
-modAlpha()
-saveData(piMultiplication())
-
-#print(matrix)
+pageRank('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/')
