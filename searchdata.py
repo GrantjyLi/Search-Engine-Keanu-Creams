@@ -23,15 +23,18 @@ def get_Links(URL, suffix):
     return None
 
 def get_outgoing_links(URL):
-    return get_Links(URL, "outgoinglinks")
+    return get_Links(URL, "outgoingLinks")
 
 def get_incoming_links(URL):
-    return get_Links(URL, "incominglinks")
+    return get_Links(URL, "incomingLinks")
 
 def get_page_rank(URL):
-    if checkURL(URL):
-        return None
-    return None
+    filePath = os.path.join("pageRank", 'data.json')
+    if os.path.isfile(filePath):
+        data=json.load(open(filePath))
+        if URL in data:
+            return data[URL]
+        return -1
 
 def get_idf(word):
     fHand = open(os.path.join("pageFreqFiles", "IDFData.json"))
