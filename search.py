@@ -2,7 +2,6 @@ import json
 import math
 import os.path
 import searchdata
-import crawler
 
 def search(phrase, boost):
 
@@ -29,15 +28,18 @@ def search(phrase, boost):
     for i in range(len(basisVector)): # making the term-frequency values of each word into TFIDF values
         queryVector[i] = math.log(1 + queryVector[i], 2) * idfData[basisVector[i] + "IDF"]
 
+#--------------------------------------------everthing below here is for creating the list of highest values
+
     filepath = os.listdir("pageFreqFiles")
-    for file in filepath:
+
+    for file in filepath: # grabbing json data for each file for comparison
         if file == "IDFData.json" or file == "wordPageCount.json":
             continue
         fHand = open(os.path.join("pageFreqFiles", file))
         freqData = json.load(fHand)
         fHand.close()
 
-        pageFreqData = [[], freqData["Title"]]
+        pageFreqData = [[], freqData["Title"], freqData["URL"]]
 
         for i in basisVector:
             if (i + "TFIDF") in freqData:
@@ -45,18 +47,20 @@ def search(phrase, boost):
             else:
                 pageFreqData[0].append(0)
 
-        pageFreqData[0] = calc_CS(queryVector, pageFreqData[0])
+        if boost: # figuring boost stuff
+            pageFreqData[0] = calc_CS(queryVector, pageFreqData[0]) * searchdata.get_page_rank(pageFreqData[2])
+        else:
+            pageFreqData[0] = calc_CS(queryVector, pageFreqData[0])
 
         if len(csList) ==0:
             csList.append(pageFreqData)
         elif len(csList) < 10:
             csList = insert_List(csList, pageFreqData)
-        elif pageFreqData[0] > min(csList):
-            csList.remove(min(csList))
+        elif pageFreqData[0] > csList[-1][0]:
+            csList.pop(-1)
             csList = insert_List(csList, pageFreqData)
 
-        print("new list: " +str(csList))
-    print(csList)
+    return (csList)
 
 
 def insert_List(csList, csInfo):
@@ -79,4 +83,7 @@ def calc_CS(queryVector, pageVector):
 
     return numerator / ((qEuclidNorm**0.5) * (pEuclidNorm**0.5))
 
-#search("kiwi kiwi lime banana banana apple apple apple", True)
+list = search('coconut coconut peach tomato pear banana',False)
+
+for i in list:
+    print(i)
