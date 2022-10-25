@@ -27,6 +27,7 @@ def insert_List(csInfo):
 
     return list + [csInfo]
 
+
 def calc_CS(queryVector, pageVector, boost):
     global pageRankData
     numerator =0
@@ -45,11 +46,13 @@ def calc_CS(queryVector, pageVector, boost):
 
     return numerator / ((qEuclidNorm**0.5) * (pEuclidNorm**0.5))
 
+
 def fetchPageRank():
     filePath = os.path.join("pageRank", 'data.json')
     if os.path.isfile(filePath):
         data=json.load(open(filePath))
         return data
+
 
 def init(input, boost):
     global phrase
@@ -65,6 +68,7 @@ def init(input, boost):
     idfData = json.load(fHand) # getting IDF values of crawled website
     fHand.close()
 
+
 def populateBasisVector():
     global phrase
     global basisVector
@@ -77,6 +81,7 @@ def populateBasisVector():
                 basisVector.append(i)
             queryDict[i] +=1
 
+
 def populateQueryVector():
     global idfData
     global phrase
@@ -88,6 +93,7 @@ def populateQueryVector():
     for i in range(len(basisVector)): # making the term-frequency values of each word into TFIDF values
         queryVector[i] = math.log(1 + queryVector[i], 2) * idfData[basisVector[i] + "IDF"]
 
+
 def compareScore(freqData):
     global csList
     if len(csList) ==0:
@@ -97,6 +103,7 @@ def compareScore(freqData):
     elif freqData['score'] > csList[-1]['score']:
         csList.pop(-1)
         csList = insert_List(freqData)
+
 
 def calculateScore(boost):
     global csList
@@ -120,6 +127,7 @@ def calculateScore(boost):
 
         pageFreqData['score'] = calc_CS(queryVector, pageFreqData,boost)
         compareScore(pageFreqData)
+
 
 #Main Function
 def search(input, boost):

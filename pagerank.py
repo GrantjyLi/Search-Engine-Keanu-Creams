@@ -18,6 +18,7 @@ def mult_scalar(matrix, scale):
 			resMatrix[i][j] *= scale
 	return resMatrix
 
+
 def mult_matrix(a, b):
 	if ((len(b) != len(a[0])) or (len(a) == 0) or (len(b) ==0) or (len(a[0])==0) or (len(b[0]) ==0)):
 		return None
@@ -34,6 +35,7 @@ def mult_matrix(a, b):
 			resMatrix[j].append(currSum)#add currSum to the result Matrix
 	return resMatrix
 
+
 def euclidean_dist(a, b):
     if len(a[0]) != len(b[0]):
         return None
@@ -42,11 +44,11 @@ def euclidean_dist(a, b):
     for i in range (len(a[0])):
         sum+=(a[0][i]-b[0][i])**2
         return (sum)**(1/2)
-    
+
+
 def fetchURL(file):
     dict = json.load(open(os.path.join("pageFiles", file)))
     return dict['URL']
-
 
 
 def createMap():
@@ -70,6 +72,7 @@ def createMatrix():
     for x in range (len(urlToIndex)):
         matrix.append([0]*len(urlToIndex))
 
+
 def populateMatrix():
     global matrix
     global urlToIndex
@@ -80,6 +83,7 @@ def populateMatrix():
         for y in dict['outgoingLinks']:
             matrix[urlToIndex[fetchURL(x)]][urlToIndex[y]] = 1
             matrix[urlToIndex[y]][urlToIndex[fetchURL(x)]] = 1
+
 
 def randomProbability():
     for x in matrix:
@@ -96,6 +100,7 @@ def randomProbability():
             for z in numIndex:
                 x[z] = 1/numX
 
+
 def modAlpha():
     global matrix
     global length
@@ -105,10 +110,12 @@ def modAlpha():
         for y in range(len(x)):
             x[y] += alpha/length
 
+
 def addCurrVector(currVector):
     for x in range(length-1):
         currVector.append(0)
     return [currVector]
+
 
 def piMultiplication():
     global matrix
@@ -128,6 +135,7 @@ def piMultiplication():
     
     return currVector
 
+
 def saveData(values):
     if not os.path.exists("pageRank"):
         os.makedirs("pageRank")
@@ -139,6 +147,7 @@ def saveData(values):
     with open((filePath), "w") as fp:
         json.dump(dict, fp)
     fp.close()
+
 
 #Main Function       
 def pageRank():
