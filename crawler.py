@@ -2,7 +2,7 @@ import webdev
 import os
 import json
 import math
-
+import pagerank
 allPages = {}
 totalPages =0
 websiteName =""
@@ -126,7 +126,6 @@ def crawl(seed):
         os.remove(os.path.join("pageFiles", i))
     for i in os.listdir("pageFreqFiles"):
         os.remove(os.path.join("pageFreqFiles", i))
-
     crawler(seed)
 
     itemPages ={}
@@ -166,10 +165,11 @@ def crawl(seed):
     with open(os.path.join("pageFreqFiles", "wordPageCount.json"), "w") as fp:
         json.dump(itemPages, fp)
     fp.close()
-
+    pagerank.pageRank()
     end = time.time()
     print(end - start)
     return totalPages
+   
 
 crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
 
