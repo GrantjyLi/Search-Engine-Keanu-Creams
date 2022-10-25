@@ -13,8 +13,8 @@ length = 0
 #Functions
 def mult_scalar(matrix, scale):
 	resMatrix = matrix
-	for i in range (len(matrix)):
-		for j in range (len(matrix[i])):
+	for i in range(len(matrix)):
+		for j in range(len(matrix[i])):
 			resMatrix[i][j] *= scale
 	return resMatrix
 
@@ -72,10 +72,6 @@ def createMatrix():
     for x in range (len(urlToIndex)):
         matrix.append([0]*len(urlToIndex))
 
-
-def populateMatrix():
-    global matrix
-    global urlToIndex
     files = os.listdir('pageFiles')
     
     for x in files:
@@ -99,7 +95,6 @@ def randomProbability():
         else:
             for z in numIndex:
                 x[z] = 1/numX
-
 
 def modAlpha():
     global matrix
@@ -153,7 +148,6 @@ def saveData(values):
 def pageRank():
     createMap()
     createMatrix()
-    populateMatrix()
     randomProbability()
     modAlpha()
     saveData(piMultiplication())
