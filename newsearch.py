@@ -23,8 +23,7 @@ def insert_List(csInfo):
             post = list[i:]
             tempList = prev+[csInfo]+post
             return tempList
-            
-
+    
     return list + [csInfo]
 
 
@@ -39,11 +38,8 @@ def calc_CS(queryVector, pageVector, boost):
         pEuclidNorm += pageVector['score'][i] **2
     if qEuclidNorm ==0 or pEuclidNorm ==0:
         return 0
-    
     if boost:
         return (numerator / ((qEuclidNorm**0.5) * (pEuclidNorm**0.5)))*pageRankData[pageVector['url']]
-
-
     return numerator / ((qEuclidNorm**0.5) * (pEuclidNorm**0.5))
 
 
@@ -63,7 +59,6 @@ def init(input, boost):
         pageRankData = fetchPageRank()
         
     phrase = input.split()
-
     fHand = open(os.path.join("pageFreqFiles", "IDFData.json"))
     idfData = json.load(fHand) # getting IDF values of crawled website
     fHand.close()
