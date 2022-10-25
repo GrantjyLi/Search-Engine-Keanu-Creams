@@ -3,12 +3,14 @@ import os
 import json
 import math
 
+#Global Variables
 urlToIndex={}
 indexToURL={}
 matrix=[]
 alpha = .1
 length = 0
 
+#Functions
 def mult_scalar(matrix, scale):
 	resMatrix = matrix
 	for i in range (len(matrix)):
@@ -138,7 +140,7 @@ def saveData(values):
         json.dump(dict, fp)
     fp.close()
 
-        
+#Main Function       
 def pageRank():
     createMap()
     createMatrix()

@@ -83,7 +83,7 @@ def calc_CS(queryVector, pageVector):
 
     return numerator / ((qEuclidNorm**0.5) * (pEuclidNorm**0.5))
 
-list = search('coconut coconut peach tomato pear banana',False)
+list = search('coconut coconut peach tomato pear banana',True)
 
 for i in list:
     print(i)

@@ -50,6 +50,9 @@ def get_text(content, link):
         if type(dict[i]) is int: 
             TFDict[i + "TF"] = dict[i]/totalWords
 
+    TFDict["URL"] = websiteName + webpageName + '.html'
+    TFDict["Title"] = webpageName
+
     with open(freqFilePath, "w") as fp:
         json.dump(TFDict, fp)
     fp.close()
@@ -66,7 +69,6 @@ def get_text(content, link):
     fhand.close()
 
     dict.update(thisdict)
-    print(websiteName)
     dict["URL"] = websiteName+webpageName + '.html'
     dict["Total Words"] = totalWords
     dict['outgoingLinks'] = links
@@ -159,6 +161,8 @@ def crawl(seed):
         fHand.close()
         moretfData ={}
         for k in tfData:
+            if k == "URL":
+                break
             moretfData[k + "IDF"] = math.log(1 + tfData[k], 2) * idfData[k.strip("TF") + "IDF"]
         tfData.update(moretfData)
         with open(os.path.join("pageFreqFiles", i), "w") as fp:
@@ -178,3 +182,4 @@ def crawl(seed):
     return totalPages
 
 crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
+
