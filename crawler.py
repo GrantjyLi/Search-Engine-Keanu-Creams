@@ -62,11 +62,10 @@ def get_text(content, link):
         if x != '<a':
             link = x[x.index("ref=\".") + 7: x.index("\">")]
             links.append(websiteName + link)
-            addIncoming(websiteName + link,webpageName)
+            addIncoming(webpageName + '.html',link[0:3])
+           
 
-    fhand = open(os.path.join("pageFiles", webpageName + ".json"))
-    thisdict = json.load(fhand)
-    fhand.close()
+    thisdict = {}
 
     dict.update(thisdict)
     dict["URL"] = websiteName+webpageName + '.html'
@@ -79,21 +78,12 @@ def get_text(content, link):
 
 
 def addIncoming(addLink,link):
+    print(addLink)
     global websiteName
-    fileName = os.path.join("pageFiles", link +'.json')
-    if os.path.exists(fileName):
-        dict = json.load(open(fileName))
-    else:
-        dict={}
+    fileName = os.path.join("incomingLinks", link, addLink)
+    if not os.path.exists(fileName):
+        os.makedirs(fileName)
 
-    if 'incomingLinks' in dict:
-        dict['incomingLinks'].append(addLink)
-    else:
-        dict['incomingLinks'] = [addLink]
-
-    with open(fileName, "w") as fp:
-        json.dump(dict, fp)
-    fp.close()
 
 def crawler(seed):
 
@@ -182,4 +172,5 @@ def crawl(seed):
     return totalPages
 
 crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
+
 
