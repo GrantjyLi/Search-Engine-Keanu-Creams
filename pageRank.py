@@ -11,6 +11,21 @@ alpha = .1
 length = 0
 
 #Functions
+def resetData():
+    global urlToIndex
+    global indexToURL
+    global matrix
+    global length
+    if os.path.isdir('pageRank'):
+        for i in os.listdir("pageRank"):
+            os.remove(os.path.join("pageRank", i))
+    urlToIndex={}
+    indexToURL={}
+    matrix = []
+    length=0
+
+
+
 def mult_scalar(matrix, scale):
 	resMatrix = matrix
 	for i in range(len(matrix)):
@@ -143,11 +158,25 @@ def saveData(values):
         json.dump(dict, fp)
     fp.close()
 
+def altSaveData(values):
+    if not os.path.exists("pageRank"):
+        os.makedirs("pageRank")
+    
+    for i in range (len(values[0])):
+        fileName = indexToURL[i]
+        filePath=open(os.path.join("pageRank", fileName[-8:-5]+'.txt'), 'a')
+        filePath.write(str(values[0][i]))
+        filePath.close()
+
+
 
 #Main Function       
 def pageRank():
+    resetData()
     createMap()
     createMatrix()
     randomProbability()
     modAlpha()
-    saveData(piMultiplication())
+    piData= piMultiplication()
+    saveData(piData)
+    altSaveData(piData)

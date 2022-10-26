@@ -55,12 +55,22 @@ def get_incoming_links(URL):
         fHand.close()
         return list
     return None
+    
 def get_page_rank(URL):
-    global pageRankData
-    if pageRankData == {}:
-        fetchPageRank()
-    if URL in pageRankData:
-        return pageRankData[URL]
+    if os.path.exists(os.path.join("pageRank", URL[-8:-5]+'.txt')):
+        filePath=open(os.path.join("pageRank", URL[-8:-5]+'.txt'),'r')
+        value = float(filePath.readline())
+        filePath.close()
+        return value
+    return -1
+
+def get_page_rank_list(URL):
+    URL=URL[0]
+    if os.path.exists(os.path.join("pageRank", URL[-8:-5]+'.txt')):
+        filePath=open(os.path.join("pageRank", URL[-8:-5]+'.txt'),'r')
+        value = float(filePath.readline())
+        filePath.close()
+        return value
     return -1
 
 

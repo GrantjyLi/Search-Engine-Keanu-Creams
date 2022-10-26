@@ -28,7 +28,7 @@ def insert_List(csInfo):
 
 
 def calc_CS(queryVector, pageVector, boost):
-    global pageRankData
+    global pageRankDat
     numerator =0
     qEuclidNorm =0
     pEuclidNorm =0
@@ -39,7 +39,7 @@ def calc_CS(queryVector, pageVector, boost):
     if qEuclidNorm ==0 or pEuclidNorm ==0:
         return 0
     if boost:
-        return (numerator / ((qEuclidNorm**0.5) * (pEuclidNorm**0.5)))*pageRankData[pageVector['url']]
+        return (numerator / ((qEuclidNorm**0.5) * (pEuclidNorm**0.5)))*searchdata.get_page_rank([pageVector['url']][0])
     return numerator / ((qEuclidNorm**0.5) * (pEuclidNorm**0.5))
 
 
@@ -143,8 +143,3 @@ def search(input, boost):
     populateQueryVector()
     calculateScore(boost)
     return csList
-"""
-list = search('coconut coconut peach tomato pear banana',True)
-for i in list:
-    print(i)
-"""
