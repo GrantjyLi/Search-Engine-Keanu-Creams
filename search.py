@@ -11,7 +11,6 @@ basisVector =[]
 queryDict ={}
 csList = []
 idfData = {}
-pageRankData = {}
 
 #Functions
 def insert_List(csInfo):
@@ -28,7 +27,6 @@ def insert_List(csInfo):
 
 
 def calc_CS(queryVector, pageVector, boost):
-    global pageRankDat
     numerator =0
     qEuclidNorm =0
     pEuclidNorm =0
@@ -53,7 +51,6 @@ def fetchPageRank():
 def init(input, boost):
     global phrase
     global idfData
-    global pageRankData
     global queryVector
     global basisVector
     global queryDict
@@ -65,11 +62,8 @@ def init(input, boost):
     queryDict ={}
     csList = []
     idfData = {}
-    pageRankData = {}
 
-    if boost:#Loading pagerank if nessasary
-        pageRankData = fetchPageRank()
-        
+  
     phrase = input.split()
     fHand = open(os.path.join("pageFreqFiles", "IDFData.json"))
     idfData = json.load(fHand) # getting IDF values of crawled website

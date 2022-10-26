@@ -178,5 +178,6 @@ def pageRank():
     randomProbability()
     modAlpha()
     piData= piMultiplication()
-    saveData(piData)
     altSaveData(piData)
+
+pageRank()
