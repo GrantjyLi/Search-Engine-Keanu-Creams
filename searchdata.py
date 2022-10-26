@@ -5,7 +5,10 @@ from pageRank import pageRank
 
 #Global Variables
 idfData = {}
+pageRankData = {}
 
+
+    
 def fetchIDFData():
     global idfData
     filePath = os.path.join("pageFreqFiles", "IDFData.json")
@@ -45,6 +48,15 @@ def get_incoming_links(URL):
         fHand.close()
         return list
     return None
+    
+def get_page_rank(URL):
+    if os.path.exists(os.path.join("pageRank", URL[-8:-5]+'.txt')):
+        filePath=open(os.path.join("pageRank", URL[-8:-5]+'.txt'),'r')
+        value = float(filePath.readline())
+        filePath.close()
+        return value
+    return -1
+
 
 def get_idf(word):
     global idfData
