@@ -179,5 +179,3 @@ def pageRank():
     modAlpha()
     piData= piMultiplication()
     altSaveData(piData)
-
-pageRank()
