@@ -5,7 +5,6 @@ import math
 import pageRank
 allPages = {}
 totalPages =0
-websiteName =""
 def checkFileDir():
     if not os.path.exists("pageFiles"):
         os.makedirs("pageFiles")
@@ -52,7 +51,7 @@ def get_wordCount(content):
 
     return {"Page Dictionary" : pageDict, "Total Words": totalWords}
 
-def write_term_frequency(title, pageDict, totalWords):
+def write_term_frequency(title, pageDict, totalWords, websiteName):
     freqFilePath = os.path.join("pageFreqFiles", title + "TF.json")
     TFDict = {}
 
@@ -67,9 +66,29 @@ def write_term_frequency(title, pageDict, totalWords):
         json.dump(TFDict, fp)
     fp.close()
 
-def get_text(content):
+def get_links(content, title, websiteName):
+    links =[]
+
+    outLinks = content[content.find("<a"): content.rfind('</a>') + len("</a>")]
+    linkStart = outLinks.find("href=\"")
+
+    while linkStart != -1:
+        endLink = outLinks.find("\">", linkStart)
+        link = outLinks[linkStart + len("href=\""): endLink]
+
+        if link[0] != ".":
+            websiteName = link[:link.rfind("/") + 1]
+        else:
+            link = link[2:]
+
+        links.append(websiteName + link)
+        addIncoming(websiteName + title + '.html', link[:link.index(".")])
+        linkStart = outLinks.find("href=\"", endLink)
+
+    return links
+
+def get_text(content, websiteName):
     global totalPages
-    global websiteName
     totalPages += 1
 
     titleStart = content.find("<title")
@@ -79,35 +98,22 @@ def get_text(content):
     pageDict = pageInfo["Page Dictionary"]  # dictionary that hold's a page's important values
     totalWords = pageInfo["Total Words"]  # getting total words
 
-    write_term_frequency(title, pageDict, totalWords)
+    write_term_frequency(title, pageDict, totalWords, websiteName)
 
-    links = []
     pageDict["Title"] = title
     pageDict["URL"] = websiteName + title + '.html'
     pageDict["Total Words"] = totalWords
-
-    linkStart = content.find('</p>')
-    linkEnd = content.find('</body>', linkStart)
-
-    outLinks = content[linkStart + 5: linkEnd - 1]
-    outLinks = outLinks.strip(" ").split()
-
-    for x in outLinks:
-        if x != '<a':
-            link = x[x.index("ref=\".") + 7: x.index("\">")]
-            links.append(websiteName + link)
-            addIncoming(websiteName + title + '.html', link[:link.index(".")])
-
-    pageDict['outgoingLinks'] = links
+    pageDict['outgoingLinks'] = get_links(content, title, websiteName)
 
     filePath = os.path.join("pageFiles", title + ".json")
     with open(filePath, "w") as fp:
         json.dump(pageDict, fp)
     fp.close()
 
+    return pageDict["outgoingLinks"]
+
 
 def addIncoming(addLink, link):
-    global websiteName
     fHand = open(os.path.join("incomingLinks", link + ".txt"), "a")
     fHand.write(addLink + " ")
     fHand.close()
@@ -154,39 +160,31 @@ def get_TFIDF_Data():
         json.dump(idfData, fp)
     fp.close()
 
-def crawler(seed):
-    global allPages
-    global websiteName
-    allPages[seed] = ""
-    page = webdev.read_url(seed)
-    print("crawling " + seed)
-    get_text(webdev.read_url(seed))
-
-    length = 0
-
-    while len(allPages) > length:
-
-        start = page.find("href=\"")
-        length = len(allPages)
-
-        while start > 0:
-            end = page.find(".html", start)
-            link = websiteName + page[start + 8:end + 5]
-
-            if link not in allPages:
-
-                crawler(link)
-            start = page.find("href=\"", end)
-
 def crawl(seed):
     import time
     global totalPages
-    global websiteName
 
     clear_Data()
     start = time.time()
-    websiteName = seed[0:seed.rfind("/") + 1]
-    crawler(seed)
+
+    outgoingLinks = [seed]
+
+    allPages[seed] =0
+
+    while len(outgoingLinks) > 0:
+        page = outgoingLinks[0]
+        allPages[page] = 0
+        print("crawling " + page)
+        websiteName = page[:page.rfind("/") + 1]
+
+        newLinks = get_text(webdev.read_url(page), websiteName)
+
+        for i in newLinks:
+            if i not in allPages:
+                allPages[i] = 0
+                outgoingLinks.append(i)
+
+        outgoingLinks.pop(0)
 
     get_TFIDF_Data()
     pageRank.pageRank()
