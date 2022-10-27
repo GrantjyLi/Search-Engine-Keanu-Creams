@@ -174,7 +174,6 @@ def crawl(seed):
     while len(outgoingLinks) > 0:
         page = outgoingLinks[0]
         allPages[page] = 0
-        print("crawling " + page)
         websiteName = page[:page.rfind("/") + 1]
 
         newLinks = get_text(webdev.read_url(page), websiteName)
@@ -190,7 +189,4 @@ def crawl(seed):
     pageRank.pageRank()
 
     end = time.time()
-    print(end - start)
     return totalPages
-
-#crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
