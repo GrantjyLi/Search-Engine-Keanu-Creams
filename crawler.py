@@ -31,44 +31,34 @@ def clear_Data():
         os.remove(os.path.join("incomingLinks", i))
     for i in os.listdir("pageRank"):
         os.remove(os.path.join("pageRank", i))
+    #https://www.youtube.com/watch?v=8oQ8zbyCJd0&ab_channel=BugHorseInternational
 
-def get_text(content, link):
-
-    title = content[content.index("itle>") + 5: content.index("</tit")]
-
-    global totalPages
-    global websiteName
-    totalPages += 1
-#---------------------------
-    linkStart = content.find('</p>')
-    linkEnd = content.find('</body>', linkStart)
-
-    outLinks = content[linkStart + 5: linkEnd-1]
-    outLinks = outLinks.strip(" ").split()
-    links = []
-
+def get_wordCount(content):
+    pageDict = {}  # dictionary that hold's a page's important values
+    totalWords = 0
     start = content.find("<p>")
-    filePath = os.path.join("pageFiles", title + ".json")
-    freqFilePath = os.path.join("pageFreqFiles", title + "TF.json")
-    dict = {}
-    totalWords =0
-
-    while start > 0:
+    while start > 0:  # getting all data in every paragraph tag
         end = content.find("</p>", start)
-        words = content[start + 3: end]
-
+        words = content[start + 3: end]  # getting array of all words between start and end indices
         words = words.strip("\n").split()
-        for i in words:
-            if i not in dict:
-                dict[i] = 0
-            dict[i] += 1
-        totalWords += len(words)
-        start = content.find("<p>", end)
-    TFDict ={}
-    # ---------------------------
-    for i in dict:
-        if type(dict[i]) is int: 
-            TFDict[i + "TF"] = dict[i]/totalWords
+
+        for i in words:  # looping through the array of words
+            if i not in pageDict:  # adding the word to the dictionary with a count that increments
+                pageDict[i] = 0
+            pageDict[i] += 1
+
+        totalWords += len(words)  # getting the total amount of words in the paragraph tag
+        start = content.find("<p>", end)  # finding the beginning of the next paragraph tag
+
+    return {"Page Dictionary" : pageDict, "Total Words": totalWords}
+
+def write_term_frequency(title, pageDict, totalWords):
+    freqFilePath = os.path.join("pageFreqFiles", title + "TF.json")
+    TFDict = {}
+
+    for i in pageDict:
+        if type(pageDict[i]) is int:
+            TFDict[i + "TF"] = pageDict[i] / totalWords
 
     TFDict["URL"] = websiteName + title + '.html'
     TFDict["Title"] = title
@@ -77,70 +67,55 @@ def get_text(content, link):
         json.dump(TFDict, fp)
     fp.close()
 
-    dict["Title"] = title
+def get_text(content):
+    global totalPages
+    global websiteName
+    totalPages += 1
+
+    titleStart = content.find("<title")
+    title = content[content.find(">", titleStart) + 1: content.find("<", titleStart + 1)]
+
+    pageInfo = get_wordCount(content)
+    pageDict = pageInfo["Page Dictionary"]  # dictionary that hold's a page's important values
+    totalWords = pageInfo["Total Words"]  # getting total words
+
+    write_term_frequency(title, pageDict, totalWords)
+
+    links = []
+    pageDict["Title"] = title
+    pageDict["URL"] = websiteName + title + '.html'
+    pageDict["Total Words"] = totalWords
+
+    linkStart = content.find('</p>')
+    linkEnd = content.find('</body>', linkStart)
+
+    outLinks = content[linkStart + 5: linkEnd - 1]
+    outLinks = outLinks.strip(" ").split()
+
     for x in outLinks:
         if x != '<a':
             link = x[x.index("ref=\".") + 7: x.index("\">")]
             links.append(websiteName + link)
-            addIncoming(websiteName + title + '.html',link[:link.index(".")])
-           
+            addIncoming(websiteName + title + '.html', link[:link.index(".")])
 
-    thisdict = {}
+    pageDict['outgoingLinks'] = links
 
-    dict.update(thisdict)
-    dict["URL"] = websiteName+ title + '.html'
-    dict["Total Words"] = totalWords
-    dict['outgoingLinks'] = links
-
+    filePath = os.path.join("pageFiles", title + ".json")
     with open(filePath, "w") as fp:
-        json.dump(dict, fp)
+        json.dump(pageDict, fp)
     fp.close()
 
 
-def addIncoming(addLink,link):
+def addIncoming(addLink, link):
     global websiteName
     fHand = open(os.path.join("incomingLinks", link + ".txt"), "a")
     fHand.write(addLink + " ")
     fHand.close()
 
 
-def crawler(seed):
-
-    global allPages
-    global websiteName
-    allPages[seed] = ""
-    page = webdev.read_url(seed)
-    get_text(webdev.read_url(seed), seed)
-
-    length = 0
-
-    while len(allPages) > length:
-
-        start = page.find("href=\"")
-
-        length = len(allPages)
-
-        while start > 0:
-            end = page.find(".html", start)
-            link = websiteName + page[start + 8:end + 5]
-
-            if link not in allPages:
-                print("crawling " + link)
-                crawler(link)
-            start = page.find("href=\"", end)
-
-def crawl(seed):
-    import time
+def get_IDF_Data():
     global totalPages
-    global websiteName
-
-    clear_Data()
-
-    start = time.time()
-    websiteName = seed[0:seed.rfind("/") + 1]
-    crawler(seed)
-# -------------------------
-    itemPages ={}
+    itemPages = {}
     for i in os.listdir("pageFiles"):
         fHand = open(os.path.join("pageFiles", i))
         data = json.load(fHand)
@@ -149,23 +124,27 @@ def crawl(seed):
             if i == "Title":
                 break
             if i not in itemPages:
-                itemPages[i] =0
-            itemPages[i] +=1
+                itemPages[i] = 0
+            itemPages[i] += 1
 
-    idfData ={}
+    idfData = {}
     for i in itemPages:
-        idfData[i + "IDF"] = math.log(totalPages/(1+itemPages[i]), 2)
-#-------------------------
+        idfData[i + "IDF"] = math.log(totalPages / (1 + itemPages[i]), 2)
+    return idfData
+
+def get_TFIDF_Data():
+    idfData = get_IDF_Data()
     for i in os.listdir("pageFreqFiles"):
         fHand = open(os.path.join("pageFreqFiles", i))
         tfData = json.load(fHand)
         fHand.close()
 
-        moretfData ={}
+        moretfData = {}
         for k in tfData:
             if k == "URL":
                 break
             moretfData[k + "IDF"] = math.log(1 + tfData[k], 2) * idfData[k.strip("TF") + "IDF"]
+
         tfData.update(moretfData)
         with open(os.path.join("pageFreqFiles", i), "w") as fp:
             json.dump(tfData, fp)
@@ -175,17 +154,45 @@ def crawl(seed):
         json.dump(idfData, fp)
     fp.close()
 
-    with open(os.path.join("pageFreqFiles", "wordPageCount.json"), "w") as fp:
-        json.dump(itemPages, fp)
-    fp.close()
+def crawler(seed):
+    global allPages
+    global websiteName
+    allPages[seed] = ""
+    page = webdev.read_url(seed)
+    print("crawling " + seed)
+    get_text(webdev.read_url(seed))
 
+    length = 0
+
+    while len(allPages) > length:
+
+        start = page.find("href=\"")
+        length = len(allPages)
+
+        while start > 0:
+            end = page.find(".html", start)
+            link = websiteName + page[start + 8:end + 5]
+
+            if link not in allPages:
+
+                crawler(link)
+            start = page.find("href=\"", end)
+
+def crawl(seed):
+    import time
+    global totalPages
+    global websiteName
+
+    clear_Data()
+    start = time.time()
+    websiteName = seed[0:seed.rfind("/") + 1]
+    crawler(seed)
+
+    get_TFIDF_Data()
     pageRank.pageRank()
 
     end = time.time()
     print(end - start)
     return totalPages
-   
 
 #crawl("http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html")
-
-
