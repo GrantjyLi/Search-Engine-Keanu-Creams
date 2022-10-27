@@ -189,4 +189,5 @@ def crawl(seed):
     pageRank.pageRank()
 
     end = time.time()
+    #print(end - start)
     return totalPages
