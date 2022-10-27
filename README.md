@@ -1,7 +1,8 @@
 # Search-Engine
-Search Engine
+In this folder are all of the files for the final 1405Z Search Engine Project
 
 Names: Venuja Perera, Grant Li
+Date: 26/10/2022
 
 To run searchengine.py which will prompt for a url and a query via the command line - 
   On Windows: Open command line and enter C:\Users\YourName> py filePath\searchengine.py
