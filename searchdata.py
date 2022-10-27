@@ -16,6 +16,17 @@ def fetchIDFData():
         idfData = json.load(open(filePath))
         return
     return -1
+    
+def get_tf_data(URL, word, suffix):
+    if checkURL(URL):
+        fhand = open(os.path.join("pageFreqFiles", get_page(URL) + "TF" + ".json"))
+        data = json.load(fhand)
+        fhand.close()
+
+        if word + suffix not in data:
+            return 0
+        return data[word + suffix]
+    return 0
 
 
 def get_page(URL):
@@ -66,22 +77,8 @@ def get_idf(word):
         return 0
     return idfData[word + "IDF"]
 
-
-def get_tf_data(URL, word, suffix):
-    if checkURL(URL):
-        fhand = open(os.path.join("pageFreqFiles", get_page(URL) + "TF" + ".json"))
-        data = json.load(fhand)
-        fhand.close()
-
-        if word + suffix not in data:
-            return 0
-        return data[word + suffix]
-    return 0
-
 def get_tf(URL, word):
     return get_tf_data(URL, word, "TF")
 
 def get_tf_idf(URL, word):
     return get_tf_data(URL, word, "TFIDF")
-
-

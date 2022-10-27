@@ -48,7 +48,7 @@ def fetchPageRank():
         return data
 
 
-def init(input, boost):
+def init(input):
     global phrase
     global idfData
     global queryVector
@@ -132,7 +132,7 @@ def calculateScore(boost):
 
 #Main Function
 def search(input, boost):
-    init(input, boost)
+    init(input)
     populateBasisVector()
     populateQueryVector()
     calculateScore(boost)

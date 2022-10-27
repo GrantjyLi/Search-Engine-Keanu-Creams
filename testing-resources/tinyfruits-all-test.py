@@ -1,11 +1,11 @@
 
 import testingtools
-import newCrawler
+import crawler
 import searchdata
 import search
 
 #Performing crawl starting at seed http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html
-newCrawler.crawl('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html')
+crawler.crawl('http://people.scs.carleton.ca/~davidmckenney/tinyfruits/N-0.html')
 
 
 output = open('tinyfruits-all-outgoing-failed.txt', 'w')
