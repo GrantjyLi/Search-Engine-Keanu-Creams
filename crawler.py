@@ -30,7 +30,7 @@ def clear_Data():
         os.remove(os.path.join("incomingLinks", i))
     for i in os.listdir("pageRank"):
         os.remove(os.path.join("pageRank", i))
-    #https://www.youtube.com/watch?v=8oQ8zbyCJd0&ab_channel=BugHorseInternational
+    
 
 def get_wordCount(content):
     pageDict = {}  # dictionary that hold's a page's important values
@@ -69,7 +69,7 @@ def write_term_frequency(title, pageDict, totalWords, websiteName):
 def get_links(content, title, websiteName):
     links =[]
 
-    outLinks = content[content.find("<a"): content.rfind('</a>') + len("</a>")]
+    outLinks = content[content.find("<a"): content.rfind('</a>') + len("</a>")]                                                                                                                                                                                                                                                                                                                                                 #https://www.youtube.com/watch?v=8oQ8zbyCJd0&ab_channel=BugHorseInternational
     linkStart = outLinks.find("href=\"")
 
     while linkStart != -1:
